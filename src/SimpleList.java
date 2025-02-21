@@ -146,8 +146,24 @@ public class SimpleList<T> implements List<T> {
 
     @Override
     public boolean retainAll(Collection<?> c) {
-        // TODO Auto-generated method stub
-        return false;
+        boolean modified = false;
+        Node<T> aux = head;
+        Node<T> prev = null;
+
+        while (aux != null) {
+            if (!c.contains(aux.getData())) {
+                if (prev == null) {
+                    head = aux.getNext();
+                } else {
+                    prev.setNext(aux.getNext());
+                }
+                modified = true;
+            } else {
+                prev = aux;
+            }
+            aux = aux.getNext();
+        }
+        return modified;
     }
 
     @Override
@@ -163,8 +179,24 @@ public class SimpleList<T> implements List<T> {
 
     @Override
     public T set(int index, T element) {
-        // TODO Auto-generated method stub
-        return null;
+        if (index < 0) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        Node<T> aux = head;
+        int i = 0;
+
+        while (aux != null) {
+            if (i == index) {
+                T oldData = aux.getData();
+                aux.setData(element);
+                return oldData;
+            }
+            aux = aux.getNext();
+            i++;
+        }
+
+        throw new IndexOutOfBoundsException();
     }
 
     @Override
@@ -213,8 +245,22 @@ public class SimpleList<T> implements List<T> {
 
     @Override
     public List<T> subList(int fromIndex, int toIndex) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+        if (fromIndex < 0 || toIndex > size() || fromIndex > toIndex) {
+            throw new IndexOutOfBoundsException();
+        }
 
+        SimpleList<T> sublist = new SimpleList<>();
+        Node<T> aux = head;
+        int index = 0;
+
+        while (aux != null) {
+            if (index >= fromIndex && index < toIndex) {
+                sublist.add(aux.getData());
+            }
+            aux = aux.getNext();
+            index++;
+        }
+
+        return sublist;
+    }
 }
