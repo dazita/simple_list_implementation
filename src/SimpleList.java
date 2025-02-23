@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -114,14 +115,32 @@ public class SimpleList<T> implements List<T> {
 
     @Override
     public boolean remove(Object o) {
-        // TODO Auto-generated method stub
+        if (head == null) {
+            return false;
+        }
+        if (head.getData().equals(o)) {
+            head = head.getNext();
+            return true;
+        }
+        Node<T> current = head;
+        while (current.getNext() != null) {
+            if (current.getNext().getData().equals(o)) {
+                current.setNext(current.getNext().getNext());
+                return true;
+            }
+            current = current.getNext();
+        }
         return false;
     }
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        // TODO Auto-generated method stub
-        return false;
+        for (Object element : c) {
+            if (!this.contains(element)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -134,14 +153,53 @@ public class SimpleList<T> implements List<T> {
 
     @Override
     public boolean addAll(int index, Collection<? extends T> c) {
-        // TODO Auto-generated method stub
-        return false;
+        if (c.isEmpty()) {
+            return false;
+        }
+        if (index < 0 || index > this.size()) {
+            throw new IndexOutOfBoundsException("Índice fuera de rango");
+        }
+        List<Node<T>> nodesToAdd = new ArrayList<>();
+        for (T item : c) {
+            nodesToAdd.add(new Node<>(item));
+        }
+        if (index == 0) {
+            Node<T> lastNewNode = nodesToAdd.get(nodesToAdd.size() - 1);
+            lastNewNode.setNext(head);
+            head = nodesToAdd.get(0);
+        } else {
+            Node<T> current = head;
+            for (int i = 0; i < index - 1; i++) {
+                current = current.getNext();
+            }
+            Node<T> nextNode = current.getNext();
+            current.setNext(nodesToAdd.get(0));
+            nodesToAdd.get(nodesToAdd.size() - 1).setNext(nextNode);
+        }
+
+        return true;
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        // TODO Auto-generated method stub
-        return false;
+        boolean modified = false;
+
+        while (head != null && c.contains(head.getData())) {
+            head = head.getNext();
+            modified = true;
+        }
+    
+        Node<T> current = head;
+        while (current != null && current.getNext() != null) {
+            if (c.contains(current.getNext().getData())) {
+                current.setNext(current.getNext().getNext());
+                modified = true;
+            } else {
+                current = current.getNext();
+            }
+        }
+    
+        return modified;
     }
 
     @Override
@@ -173,9 +231,17 @@ public class SimpleList<T> implements List<T> {
 
     @Override
     public T get(int index) {
-        // TODO Auto-generated method stub
+        Node<T> aux = head;
+        int counter = 0; 
+        while (aux != null && counter < index) {
+            aux = aux.getNext();
+            counter++;
+        }
+        if (counter == index) {
+            return aux.getData();
+        }
         return null;
-    }
+    } 
 
     @Override
     public T set(int index, T element) {
@@ -201,14 +267,41 @@ public class SimpleList<T> implements List<T> {
 
     @Override
     public void add(int index, T element) {
-        // TODO Auto-generated method stub
-
+        if (index < 0 || index >= this.size()) {
+            throw new IndexOutOfBoundsException("Índice fuera de rango: " + index);
+        }
+        Node<T> newNode = new Node<T>(element);
+        if (index == 0) {
+            newNode.setNext(head);
+            head = newNode;
+        } else {
+            Node<T> aux = head;
+            for (int i = 0; i < index - 1; i++) {
+                aux = aux.getNext();
+            }
+            newNode.setNext(aux.getNext());
+            aux.setNext(newNode);
+        }
     }
 
     @Override
     public T remove(int index) {
-        // TODO Auto-generated method stub
-        return null;
+        if (index < 0 || index >= this.size()) {
+            throw new IndexOutOfBoundsException("Índice fuera de rango: " + index);
+        }
+        Node<T> aux = head;
+        Node<T> deleted = null;
+        if (index == 0) {
+            deleted = head;
+            head = head.getNext();
+        } else {
+            for (int i = 0; i < index - 1; i++) {
+                aux = aux.getNext();
+            }
+            deleted = aux.getNext();
+            aux.setNext(deleted.getNext());
+        }
+        return deleted.getData();
     }
 
     @Override
@@ -227,8 +320,17 @@ public class SimpleList<T> implements List<T> {
 
     @Override
     public int lastIndexOf(Object o) {
-        // TODO Auto-generated method stub
-        return 0;
+        int lastIndex = -1;
+        Node<T> aux = head;
+        if (this.isEmpty()) {
+            lastIndex;
+        }
+        while (aux != null) {
+            if (aux.getData().equals(o)) {
+            }
+            aux = aux.getNext();
+        }
+        return -1;
     }
 
     @Override
